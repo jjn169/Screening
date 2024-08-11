@@ -75,24 +75,26 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
+# 选择与结局变量为1对应的SHAP值（假设第三个维度中索引1对应结局变量1）
+shap_values_selected = shap_values[..., 1]
+
 # 检查数据和SHAP值的特征匹配
-if shap_values.shape[1] != data.shape[1]:
+if shap_values_selected.shape[1] != data.shape[1]:
     st.warning("SHAP值的特征数量与数据特征数量不匹配。尝试对齐特征...")
     
-    # 尝试匹配特征数量
-    if shap_values.shape[1] < data.shape[1]:
+    if shap_values_selected.shape[1] < data.shape[1]:
         st.warning("数据特征列多于SHAP值特征列，选择前部分特征...")
-        data = data.iloc[:, :shap_values.shape[1]]  # 只保留前 N 个特征，N 是SHAP值的特征数量
+        data = data.iloc[:, :shap_values_selected.shape[1]]  # 只保留前 N 个特征，N 是SHAP值的特征数量
     else:
         st.error("SHAP值的特征数量多于数据特征，这可能不正确。")
         st.stop()
 
 # 展示SHAP Summary Plot
 st.write(f"Data shape after alignment: {data.shape}")
-if shap_values.shape[1] == data.shape[1]:
+if shap_values_selected.shape[1] == data.shape[1]:
     st.header("SHAP Summary Plot")
     plt.figure()
-    shap.summary_plot(shap_values, data)
+    shap.summary_plot(shap_values_selected, data)
     st.pyplot(plt)
 else:
     st.error("SHAP值和数据的形状仍然不匹配，请检查数据处理过程。")
