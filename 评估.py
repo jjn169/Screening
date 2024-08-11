@@ -79,9 +79,17 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
-# 检查数据特征数量
-if data.shape[1] == 16:
-    st.write("数据中包含所有16个特征。")
+# 获取SHAP值的特征数量
+shap_num_features = shap_values_selected.shape[1]
 
-# 显示所有特征的SHAP Summary Plot
-shap.summary_plot(shap_values_selected, data, max_display=16)
+# 打印和检查数据特征
+print("Data columns:", data.columns.tolist())
+
+# 将数据截取至与SHAP值一致的特征数量
+data_selected = data.iloc[:, :shap_num_features]
+
+# 检查特征数量是否一致
+assert data_selected.shape[1] == shap_num_features, "数据中的特征数量与SHAP值不一致！"
+
+# 生成SHAP Summary Plot，显示所有特征
+shap.summary_plot(shap_values_selected, data_selected, max_display=shap_num_features)
