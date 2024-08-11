@@ -26,7 +26,6 @@ try:
     with open(MODEL_FILE_NAME, 'wb') as f:
         f.write(response.content)
     
-    # 检查文件是否成功保存
     if os.path.exists(MODEL_FILE_NAME):
         model = joblib.load(MODEL_FILE_NAME)
         os.remove(MODEL_FILE_NAME)
@@ -45,6 +44,7 @@ except Exception as e:
 # 加载SHAP值
 try:
     shap_values = np.load(SHAP_FILE_NAME, allow_pickle=True)
+    st.write(f"SHAP values shape: {shap_values.shape}")
 except FileNotFoundError:
     st.error(f"未找到SHAP文件：{SHAP_FILE_NAME}")
     st.stop()
@@ -75,18 +75,18 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
-# 选择与结局变量为1对应的SHAP值（假设第三个维度中索引1对应结局变量1）
-shap_values_selected = shap_values[..., 1]
-
-# 检查SHAP值和数据的形状
-st.write(f"SHAP values shape: {shap_values_selected.shape}")
-st.write(f"Data shape: {data.shape}")
+# 检查并对齐SHAP值和数据的特征
+if shap_values.shape[1] != data.shape[1]:
+    shap_features = [f'feature_{i}' for i in range(shap_values.shape[1])]
+    data = data[shap_features]  # 选择与SHAP值对应的特征
+    st.write("数据列已对齐SHAP值对应的特征。")
 
 # 展示SHAP Summary Plot
-if shap_values_selected.shape[1] == data.shape[1]:
+st.write(f"Data shape after alignment: {data.shape}")
+if shap_values.shape[1] == data.shape[1]:
     st.header("SHAP Summary Plot")
     plt.figure()
-    shap.summary_plot(shap_values_selected, data)
+    shap.summary_plot(shap_values, data)
     st.pyplot(plt)
 else:
-    st.error("SHAP值和数据的形状不匹配，请检查数据处理过程。")
+    st.error("SHAP值和数据的形状仍然不匹配，请检查数据处理过程。")
