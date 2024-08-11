@@ -28,7 +28,7 @@ contourpy==1.2.1
 cycler==0.12.1
 debugpy==1.8.2
 decorator==5.1.1
-https://github.com/jaredleekatzman/DeepSurv
+https://github.com/jaredleekatzman/DeepSurv.git
 defusedxml==0.7.1
 ecos==2.0.14
 et-xmlfile==1.1.0
