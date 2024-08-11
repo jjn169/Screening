@@ -25,9 +25,16 @@ try:
     response.raise_for_status()
     with open(MODEL_FILE_NAME, 'wb') as f:
         f.write(response.content)
-    model = joblib.load(MODEL_FILE_NAME)
-    os.remove(MODEL_FILE_NAME)
-    st.success("模型文件加载成功。")
+    
+    # 检查文件是否成功保存
+    if os.path.exists(MODEL_FILE_NAME):
+        model = joblib.load(MODEL_FILE_NAME)
+        os.remove(MODEL_FILE_NAME)
+        st.success("模型文件加载成功。")
+    else:
+        st.error(f"模型文件 '{MODEL_FILE_NAME}' 未找到，请检查文件下载是否成功。")
+        st.stop()
+
 except requests.exceptions.RequestException as e:
     st.error(f"无法下载模型文件: {e}")
     st.stop()
@@ -83,4 +90,3 @@ if shap_values_selected.shape[1] == data.shape[1]:
     st.pyplot(plt)
 else:
     st.error("SHAP值和数据的形状不匹配，请检查数据处理过程。")
-
