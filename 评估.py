@@ -79,18 +79,9 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
-# 获取SHAP值中的特征名称
-shap_feature_names = data.columns[:shap_values_selected.shape[1]]
+# 检查数据特征数量
+if data.shape[1] == 16:
+    st.write("数据中包含所有16个特征。")
 
-# 只保留数据中对应的特征列
-data_selected = data[shap_feature_names]
-
-# 展示SHAP Summary Plot
-st.write(f"Data shape after alignment: {data_selected.shape}")
-if shap_values_selected.shape[1] == data_selected.shape[1]:
-    st.header("SHAP Summary Plot")
-    plt.figure()
-    shap.summary_plot(shap_values_selected, data_selected)
-    st.pyplot(plt)
-else:
-    st.error("SHAP值和数据的形状仍然不匹配，请检查数据处理过程。")
+# 显示所有特征的SHAP Summary Plot
+shap.summary_plot(shap_values_selected, data, max_display=16)
