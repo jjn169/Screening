@@ -10,19 +10,19 @@ import os
 # GitHub 仓库信息
 GITHUB_USER = 'jjn169'
 REPO_NAME = 'Screening'
-TAG_NAME = 'rf'  # 这是你的Tag名称
+TAG_NAME = 'rf'
 MODEL_FILE_NAME = 'RandomForest.joblib'
 DATA_FILE_NAME = '分析2.xlsx'
 SHAP_FILE_NAME = 'shap1.npy'
 
-# 构建GitHub文件下载URL
-model_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/releases/download/{TAG_NAME}/{MODEL_FILE_NAME}'  # 正确的URL
+# 使用 Release 下载的URL
+model_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/releases/download/{TAG_NAME}/{MODEL_FILE_NAME}'
 data_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/raw/main/{DATA_FILE_NAME}'
 
 # 下载并加载模型文件
 try:
     response = requests.get(model_url)
-    response.raise_for_status()  # 检查请求是否成功
+    response.raise_for_status()
     with open(MODEL_FILE_NAME, 'wb') as f:
         f.write(response.content)
     model = joblib.load(MODEL_FILE_NAME)
@@ -48,7 +48,7 @@ except Exception as e:
 # 下载并加载数据文件
 try:
     response = requests.get(data_url)
-    response.raise_for_status()  # 检查请求是否成功
+    response.raise_for_status()
     with open(DATA_FILE_NAME, 'wb') as f:
         f.write(response.content)
     data = pd.read_excel(DATA_FILE_NAME)
