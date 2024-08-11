@@ -29,7 +29,8 @@ shap_values = np.load("shap1.npy", allow_pickle=True)
 
 
 # 读取数据（假设与训练模型时相同的数据）
-data = pd.read_excel(r"F:\小论文8\机器学习2\数据\2.xlsx")
+url = "https://github.com/jjn169/Screening/raw/main/分析2.xlsx"  # 确保路径正确
+data = pd.read_excel(url)
 
 # 处理race变量进行独热编码
 data = pd.get_dummies(data, columns=["race"])
