@@ -79,22 +79,18 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
-# 确保SHAP值与数据的特征数量一致
-shap_num_features = shap_values_selected.shape[1]
-if data.shape[1] != shap_num_features:
-    st.warning(f"SHAP值中的特征数量 ({shap_num_features}) 与数据中的特征数量 ({data.shape[1]}) 不匹配。")
-    data = data.iloc[:, :shap_num_features]  # 截取前 N 个特征
-    st.write(f"数据被调整为前 {shap_num_features} 个特征。")
+# 只使用前15个特征
+max_features = 15
+if data.shape[1] > max_features:
+    data = data.iloc[:, :max_features]  # 截取前15个特征
+    st.write(f"数据被调整为前 {max_features} 个特征。")
 
 # 检查特征名称是否一致
-shap_feature_names = data.columns[:shap_num_features]
+shap_feature_names = data.columns[:max_features]
 st.write(f"使用的特征名为: {shap_feature_names.tolist()}")
 
 # 生成SHAP Summary Plot
-if shap_num_features == data.shape[1]:
-    st.header("SHAP Summary Plot")
-    plt.figure()
-    shap.summary_plot(shap_values_selected, data, max_display=shap_num_features)
-    st.pyplot(plt)
-else:
-    st.error("SHAP值和数据的特征数量仍然不匹配，无法生成图表。")
+st.header("SHAP Summary Plot")
+plt.figure()
+shap.summary_plot(shap_values_selected, data, max_display=max_features)
+st.pyplot(plt)
