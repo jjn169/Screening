@@ -5,35 +5,68 @@ import matplotlib.pyplot as plt
 import numpy as np
 import joblib
 import pandas as pd
+import os
+
+# GitHub 仓库信息
 GITHUB_USER = 'jjn169'
 REPO_NAME = 'Screening'
 TAG_NAME = 'rf'  # 这是你的Tag名称
-FILE_NAME = 'RandomForest.joblib'
+MODEL_FILE_NAME = 'RandomForest.joblib'
+DATA_FILE_NAME = '分析2.xlsx'
+SHAP_FILE_NAME = 'shap1.npy'
 
 # 构建GitHub文件下载URL
-url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/raw/{TAG_NAME}/{FILE_NAME}'
+model_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/raw/{TAG_NAME}/{MODEL_FILE_NAME}'
+data_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/raw/main/{DATA_FILE_NAME}'
 
-# 下载文件
-response = requests.get(url)
-if response.status_code == 200:
-    # 将文件保存到本地临时目录
-    with open(FILE_NAME, 'wb') as f:
+# 下载并加载模型文件
+try:
+    response = requests.get(model_url)
+    response.raise_for_status()  # 检查请求是否成功
+    with open(MODEL_FILE_NAME, 'wb') as f:
         f.write(response.content)
-    # 加载模型文件
-    model = joblib.load(FILE_NAME)
-    os.remove(FILE_NAME)  # 加载后删除文件
-else:
-    print(f"Failed to download file: {response.status_code}")
+    model = joblib.load(MODEL_FILE_NAME)
+    os.remove(MODEL_FILE_NAME)
+    st.success("模型文件加载成功。")
+except requests.exceptions.RequestException as e:
+    st.error(f"无法下载模型文件: {e}")
+    st.stop()
+except Exception as e:
+    st.error(f"加载模型文件时出错: {e}")
+    st.stop()
+
 # 加载SHAP值
-shap_values = np.load("shap1.npy", allow_pickle=True)
+try:
+    shap_values = np.load(SHAP_FILE_NAME, allow_pickle=True)
+except FileNotFoundError:
+    st.error(f"未找到SHAP文件：{SHAP_FILE_NAME}")
+    st.stop()
+except Exception as e:
+    st.error(f"加载SHAP值时出错: {e}")
+    st.stop()
 
+# 下载并加载数据文件
+try:
+    response = requests.get(data_url)
+    response.raise_for_status()  # 检查请求是否成功
+    with open(DATA_FILE_NAME, 'wb') as f:
+        f.write(response.content)
+    data = pd.read_excel(DATA_FILE_NAME)
+    os.remove(DATA_FILE_NAME)
+    st.success("数据文件加载成功。")
+except requests.exceptions.RequestException as e:
+    st.error(f"无法下载数据文件: {e}")
+    st.stop()
+except Exception as e:
+    st.error(f"加载数据文件时出错: {e}")
+    st.stop()
 
-# 读取数据（假设与训练模型时相同的数据）
-url = "https://github.com/jjn169/Screening/raw/main/分析2.xlsx"  # 确保路径正确
-data = pd.read_excel(url)
-
-# 处理race变量进行独热编码
-data = pd.get_dummies(data, columns=["race"])
+# 处理 race 变量进行独热编码
+try:
+    data = pd.get_dummies(data, columns=["race"])
+except KeyError as e:
+    st.error(f"数据中缺少 'race' 列: {e}")
+    st.stop()
 
 # 检查SHAP值和数据的形状
 st.write(f"SHAP values shape: {shap_values.shape}")
