@@ -6,7 +6,7 @@ import joblib
 import pandas as pd
 
 # 加载SHAP值
-shap_values = np.load(r"F:\小论文8\机器学习\sha\随机森林\shap1.npy", allow_pickle=True)
+shap_values = np.load("shap1.npy", allow_pickle=True)
 
 # 加载模型
 model = joblib.load(r"F:\小论文8\机器学习\模型2\RandomForest.joblib")
