@@ -77,7 +77,7 @@ keras==3.4.1
 keras-tuner==1.4.7
 kiwisolver==1.4.5
 kt-legacy==1.0.5
-Lasagne==0.1
+lasagne==0.2.dev1
 libclang==18.1.1
 lifelines==0.29.0
 lightgbm==4.5.0
