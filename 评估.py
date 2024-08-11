@@ -10,13 +10,13 @@ import os
 # GitHub 仓库信息
 GITHUB_USER = 'jjn169'
 REPO_NAME = 'Screening'
-TAG_NAME = 'rf'  # 这是你的Tag名称
+TAG_NAME = 'rf'  # 确保这是正确的Tag名称
 MODEL_FILE_NAME = 'RandomForest.joblib'
 DATA_FILE_NAME = '分析2.xlsx'
 SHAP_FILE_NAME = 'shap1.npy'
 
 # 构建GitHub文件下载URL
-model_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/raw/{TAG_NAME}/{MODEL_FILE_NAME}'
+model_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/releases/download/{TAG_NAME}/{MODEL_FILE_NAME}'  # 确保路径正确
 data_url = f'https://github.com/{GITHUB_USER}/{REPO_NAME}/raw/main/{DATA_FILE_NAME}'
 
 # 下载并加载模型文件
