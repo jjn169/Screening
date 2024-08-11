@@ -102,7 +102,7 @@ networkx==3.3
 notebook_shim==0.2.4
 numba==0.60.0
 numexpr==2.10.1
-numpy==1.26.4--prefer-binary
+numpy==1.26.4
 openpyxl==3.1.5
 opt-einsum==3.3.0
 optree==0.12.1
