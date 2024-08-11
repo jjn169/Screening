@@ -68,15 +68,19 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
+# 选择与结局变量为1对应的SHAP值（假设第三个维度中索引1对应结局变量1）
+shap_values_selected = shap_values[..., 1]
+
 # 检查SHAP值和数据的形状
-st.write(f"SHAP values shape: {shap_values.shape}")
+st.write(f"SHAP values shape: {shap_values_selected.shape}")
 st.write(f"Data shape: {data.shape}")
 
 # 展示SHAP Summary Plot
-if shap_values.shape[1] == data.shape[1]:
+if shap_values_selected.shape[1] == data.shape[1]:
     st.header("SHAP Summary Plot")
     plt.figure()
-    shap.summary_plot(shap_values, data)
+    shap.summary_plot(shap_values_selected, data)
     st.pyplot(plt)
 else:
     st.error("SHAP值和数据的形状不匹配，请检查数据处理过程。")
+
