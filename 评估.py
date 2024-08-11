@@ -75,10 +75,10 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
-# 检查并对齐SHAP值和数据的特征
+# 根据数据列名与SHAP值的数量来对齐
 if shap_values.shape[1] != data.shape[1]:
-    shap_features = [f'feature_{i}' for i in range(shap_values.shape[1])]
-    data = data[shap_features]  # 选择与SHAP值对应的特征
+    matching_features = data.columns[:shap_values.shape[1]]
+    data = data[matching_features]
     st.write("数据列已对齐SHAP值对应的特征。")
 
 # 展示SHAP Summary Plot
