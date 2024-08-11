@@ -79,17 +79,22 @@ except KeyError as e:
     st.error(f"数据中缺少 'race' 列: {e}")
     st.stop()
 
-# 获取SHAP值的特征数量
+# 确保SHAP值与数据的特征数量一致
 shap_num_features = shap_values_selected.shape[1]
+if data.shape[1] != shap_num_features:
+    st.warning(f"SHAP值中的特征数量 ({shap_num_features}) 与数据中的特征数量 ({data.shape[1]}) 不匹配。")
+    data = data.iloc[:, :shap_num_features]  # 截取前 N 个特征
+    st.write(f"数据被调整为前 {shap_num_features} 个特征。")
 
-# 打印和检查数据特征
-print("Data columns:", data.columns.tolist())
+# 检查特征名称是否一致
+shap_feature_names = data.columns[:shap_num_features]
+st.write(f"使用的特征名为: {shap_feature_names.tolist()}")
 
-# 将数据截取至与SHAP值一致的特征数量
-data_selected = data.iloc[:, :shap_num_features]
-
-# 检查特征数量是否一致
-assert data_selected.shape[1] == shap_num_features, "数据中的特征数量与SHAP值不一致！"
-
-# 生成SHAP Summary Plot，显示所有特征
-shap.summary_plot(shap_values_selected, data_selected, max_display=shap_num_features)
+# 生成SHAP Summary Plot
+if shap_num_features == data.shape[1]:
+    st.header("SHAP Summary Plot")
+    plt.figure()
+    shap.summary_plot(shap_values_selected, data, max_display=shap_num_features)
+    st.pyplot(plt)
+else:
+    st.error("SHAP值和数据的特征数量仍然不匹配，无法生成图表。")
